@@ -1,13 +1,13 @@
 #!/bin/bash
 cd /workspace/jinjin/UniCA-master/UniCA-master
 source .venv/bin/activate
-export DATA_PATH=/workspace/jinjin/UniCA-master/UniCA-master/data/
+export DATA_PATH=/workspace/jinjin/UniCA-master/UniCA-master/data/unica/unica_datasets/
 export MODEL_PATH=/workspace/jinjin/UniCA-master/UniCA-master/models/unica/
 export WANDB_MODE=offline
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export CUDA_VISIBLE_DEVICES=0
 
-for dataset in Climate Energy Environment Public_Health Security SocialGood; do
+for dataset in Climate Energy Environment Public_Health Security SocialGood Traffic; do
     echo "========================================"
     echo "Starting: time-mmd/$dataset"
     echo "========================================"

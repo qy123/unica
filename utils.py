@@ -191,6 +191,7 @@ def get_args_and_settings():
     parser.add_argument("--no_past", dest="with_past", action="store_false", default=True,
                         help="Whether to use the gate mechanism")
     parser.add_argument("--no_cov", dest="with_cov", action="store_false", default=True)
+    parser.add_argument("--no_text", action="store_true", help="Disable text covariates for Time-MMD")
     parser.add_argument("--no_static", dest="with_static", action="store_false", default=True,
                         help="Whether to use the gate mechanism")
     parser.add_argument("--future_skip", action="store_true", help="Whether to use the gate mechanism")
@@ -253,7 +254,7 @@ def get_dataset(args, ds_name, term):
             indexed_sample=args.indexed_sample,
             tokenizer_name=os.path.join(os.getenv("MODEL_PATH", "./models/"), args.encoder_path)
         )
-        args.use_text = True
+        args.use_text = not args.no_text
     elif is_image_dataset:
         dataset = ImageMultimodalDataset(
             name=ds_name,

@@ -172,11 +172,31 @@ def main():
 
     if normalized_results:
         results_df = pd.DataFrame(normalized_results)
+        results_df.insert(1, "base_model", args.base_model)
+        results_df.insert(2, "model_name", args.model_name)
+        results_df.insert(3, "modality", "ts_only" if args.no_text else "text")
         print("\nNormalized Results:")
         print(results_df)
-        csv_path = f"{output_dir}/normalized_results.csv"
+        run_name = "_".join(dataset_name.replace("/", "__") for dataset_name in args.datasets)
+        csv_path = f"{output_dir}/normalized_results_{args.base_model}_{results_df['modality'].iloc[0]}_{run_name}.csv"
         results_df.to_csv(csv_path, index=False)
         print(f"\nResults saved to: {csv_path}")
+
+        summary_path = f"{output_dir}/time_mmd_summary.csv"
+        if os.path.exists(summary_path):
+            summary_df = pd.read_csv(summary_path)
+            if "modality" not in summary_df.columns:
+                summary_df["modality"] = "text"
+            required_columns = {"model_name", "base_model", "dataset", "modality"}
+            if required_columns.issubset(summary_df.columns):
+                summary_df = summary_df[
+                    ~summary_df.set_index(["model_name", "base_model", "dataset", "modality"]).index.isin(
+                        results_df.set_index(["model_name", "base_model", "dataset", "modality"]).index
+                    )
+                ]
+                results_df = pd.concat([summary_df, results_df], ignore_index=True)
+        results_df.to_csv(summary_path, index=False)
+        print(f"Summary updated: {summary_path}")
     wandb.summary.update({"Datasets Evaluation": table, "finish_flag": True})
 
 
